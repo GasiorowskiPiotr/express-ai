@@ -2,7 +2,9 @@
 var appInsights = require("applicationinsights");
 var uuid = require("uuid");
 module.exports = function (app, instrumentationKey) {
-    appInsights.setup(instrumentationKey).start();
+    appInsights.setup(instrumentationKey)
+        .setAutoCollectRequests(false)
+        .setAutoCollectExceptions(false).start();
     app.locals.log = appInsights.client;
     return {
         logErrors: function (err, req, res, next) {
