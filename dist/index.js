@@ -1,7 +1,5 @@
-"use strict";
-var appInsights = require("applicationinsights");
-exports.__esModule = true;
-exports["default"] = function (app, instrumentationKey) {
+import * as appInsights from 'applicationinsights';
+export default function (app, instrumentationKey) {
     appInsights.setup(instrumentationKey).start();
     app.locals.log = appInsights.client;
     return {
@@ -12,6 +10,7 @@ exports["default"] = function (app, instrumentationKey) {
             next(err);
         },
         logRequest: function (req, res, next) {
+            res.locals.log = appInsights.client;
             appInsights.client.trackRequest(req, res);
             next();
         },

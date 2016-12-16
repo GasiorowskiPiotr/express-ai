@@ -14,6 +14,7 @@ export default (app: express.Application, instrumentationKey: string) => {
             next(err);
         },
         logRequest: (req: express.Request, res: express.Response, next: express.NextFunction) => {
+            res.locals.log = appInsights.client;
             appInsights.client.trackRequest(req, res);
             next();
         },
