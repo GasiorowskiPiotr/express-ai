@@ -36,3 +36,4 @@ module.exports = function (app, instrumentationKey) {
         }
     };
 };
+//# sourceMappingURL=index.js.map
