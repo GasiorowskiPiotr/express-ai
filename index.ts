@@ -1,6 +1,6 @@
 import * as appInsights from 'applicationinsights';
 import * as express from 'express';
-import * as uuid from 'node-uuid';
+import * as uuid from 'uuid';
 
 export = (app: express.Application, instrumentationKey: string) => {
     appInsights.setup(instrumentationKey).start();

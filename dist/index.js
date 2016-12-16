@@ -1,6 +1,6 @@
 "use strict";
 var appInsights = require("applicationinsights");
-var uuid = require("node-uuid");
+var uuid = require("uuid");
 module.exports = function (app, instrumentationKey) {
     appInsights.setup(instrumentationKey).start();
     app.locals.log = appInsights.client;
