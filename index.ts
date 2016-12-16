@@ -3,7 +3,9 @@ import * as express from 'express';
 import * as uuid from 'uuid';
 
 export = (app: express.Application, instrumentationKey: string) => {
-    appInsights.setup(instrumentationKey).start();
+    appInsights.setup(instrumentationKey)
+        .setAutoCollectRequests(false)
+        .setAutoCollectExceptions(false).start();
 
     app.locals.log = appInsights.client;
 
