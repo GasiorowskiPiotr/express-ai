@@ -61,4 +61,6 @@ Be advised the above is the TypeScript (d.ts) declaration.
 ## Plans
 1. Extend custom logging
 2. Support custom metrics
-3. API improvements
+3. Handle non-request related events (start of application / stop / crash)
+4. Tests with AppService
+5. API improvements
