@@ -1,18 +1,23 @@
 "use strict";
 var appInsights = require("applicationinsights");
+var uuid = require("node-uuid");
 module.exports = function (app, instrumentationKey) {
     appInsights.setup(instrumentationKey).start();
     app.locals.log = appInsights.client;
     return {
         logErrors: function (err, req, res, next) {
             appInsights.client.trackException(err, {
-                url: req.url
+                url: req.url,
+                requestId: res.locals.requestId
             });
             next(err);
         },
         logRequest: function (req, res, next) {
             res.locals.log = appInsights.client;
-            appInsights.client.trackRequest(req, res);
+            res.locals.requestId = uuid.v4();
+            appInsights.client.trackRequest(req, res, {
+                requestId: res.locals.requestId
+            });
             next();
         },
         traceInfo: function (message, properties) {

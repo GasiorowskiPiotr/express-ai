@@ -1,6 +1,6 @@
 {
   "name": "express-ai",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Microsoft Azure ApplicationInsights middleware of ExpressJS",
   "main": "dist/index.js",
   "scripts": {
