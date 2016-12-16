@@ -1,5 +1,6 @@
-import * as appInsights from 'applicationinsights';
-export default function (app, instrumentationKey) {
+"use strict";
+var appInsights = require("applicationinsights");
+module.exports = function (app, instrumentationKey) {
     appInsights.setup(instrumentationKey).start();
     app.locals.log = appInsights.client;
     return {

@@ -1,7 +1,7 @@
 import * as appInsights from 'applicationinsights';
 import * as express from 'express';
 
-export default (app: express.Application, instrumentationKey: string) => {
+export = (app: express.Application, instrumentationKey: string) => {
     appInsights.setup(instrumentationKey).start();
 
     app.locals.log = appInsights.client;
