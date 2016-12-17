@@ -19,19 +19,19 @@ class Logger implements ILogger {
     constructor(private ai: Client) { }
 
     traceInfo(message: string, properties?: {[key: string]: string}) {
-        this.ai.trackTrace(message, ContractsModule.SeverityLevel.Information, properties);
+        this.ai.trackTrace(message, 1, properties);
     }
     traceError(error: Error, message: string, properties?: {[key: string]: string}) {
         this.ai.trackException(error, Object.assign({}, { message: message }, properties));
     }
     traceWarning(message: string, properties?: {[key: string]: string}) {
-        this.ai.trackTrace(message, ContractsModule.SeverityLevel.Warning, properties);   
+        this.ai.trackTrace(message, 2, properties);   
     }
     traceVerbose(message: string, properties?: {[key: string]: string}) {
-        this.ai.trackTrace(message, ContractsModule.SeverityLevel.Verbose, properties);   
+        this.ai.trackTrace(message, 0, properties);   
     }
     traceCritical(message: string, properties?: {[key: string]: string}) {
-        this.ai.trackTrace(message, ContractsModule.SeverityLevel.Critical, properties);   
+        this.ai.trackTrace(message, 4, properties);   
     }
     trackEvent(name: string, properties?: {[key: string]: string}) {
         this.ai.trackEvent(name, properties);
