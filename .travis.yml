@@ -4,6 +4,8 @@ node_js:
 before_script:
 - npm install -g npm
 - npm install
+- git config --global user.email "gasiorowski.piotr@gmail.com"
+- git config --global user.name "Piotr Gąsiorowski"
 script: npm run build && npm version patch
 deploy:
   provider: npm
