@@ -6,7 +6,7 @@ before_script:
 - npm install
 - git config --global user.email "gasiorowski.piotr@gmail.com"
 - git config --global user.name "Piotr Gąsiorowski"
-script: npm run build && npm version patch
+script: npm run build
 deploy:
   provider: npm
   email: gasiorowski.piotr@gmail.com
