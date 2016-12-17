@@ -1,6 +1,11 @@
 language: node_js,
 node_js:
-    - "7"
-before_script: 
-    - npm install -g npm
-script: npm install && npm run build
+- '7'
+before_script:
+- npm install -g npm
+- npm install
+script: npm run build && npm version patch
+deploy:
+  provider: npm
+  api_key:
+    secure: AthV/7MFeZMYFHsg05wHHpGR+YZXL3JSXyi7UqrYdn/a/5dRgwEJIedfv7PtU2Jgzt7SrAsPsDsx7gJa16/eRFMuQpAh0A99tGdEx0HR6rdX5YBxvcD9UJ7O+HoJA32QanMMzkYCY12lBx90mWmK7B/WT+a7m5djMC1R1D2BRg+oAN8VzpcB8ZugE4o1/IK1gqxRRvIIVS4bE23ZJ7int4Ken0pcxSin06bpSdIdldTd8MMZmJ3c0bD3JWuecy18IUP5Z7qbH3jAb4rqQef4kW0Anvcgf6wFnTEUt8w2Pj9SZUliJIXctpArD/51AwMVSt+T9GOwkJx9wpFpNpLCUfrqU8poRbuK82Z0XzopPemrYCTjT1EpnZpuLHCtAMzRmZeoO6L7q9bluD5Kg16nwdF0GuWogJIFHgUbG9kHHcxtdVCXwwoxZgWNwWhwjV+9asUbeO8NEFQihvcud6HW6fdXRSFvsd0thS9/BWa4PGa9cieKthi0SmtsekLJehK+b+B6YkT+PXCt5/+2xwZBtADtxfIKYDX+MSYPjFf+kpaLFBEqcaj79PbAIxNi6+9xZM6Yp7Vpw9AoUmQUqBruycRjmh7CRaxJW8IlehBEO7Ch6EAJijvsvSwI08VstecV/FVI1bcCWjrEjkEFMv4NtdmItVys4Q2BPW6PsLMyiYc=
