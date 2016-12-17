@@ -39,28 +39,20 @@ Keep in mind that `requestId` is not required, it is provided as a convenience t
 For custom logging purposes, the `res.locals.log` object exposes the following functions:
 
 ```
-traceInfo: (message: string, properties?: {
-    [key: string]: string;
-}) => void;
+traceInfo(message: string, properties?: {[key: string]: string}): void;
+traceError(error: Error, message: string, properties?: {[key: string]: string}): void;
+traceWarning(message: string, properties?: {[key: string]: string}): void;
+traceVerbose(message: string, properties?: {[key: string]: string}): void;
+traceCritical(message: string, properties?: {[key: string]: string});
 
-traceError: (error: Error, message: string, properties?: {
-    [key: string]: string;
-}) => void;
-
-traceWarning: (message: string, properties?: {
-    [key: string]: string;
-}) => void;
-
-trackEvent: (name: string, properties?: {
-    [key: string]: string;
-}) => void;
+trackEvent(name: string, properties?: {[key: string]: string}): void;
+trackMetric(name: string, value: number): void;
+trackRequest(req: express.Request, res: express.Response): void
 ```
 
-Be advised the above is the TypeScript (d.ts) declaration.
-
 ## Plans
-1. Extend custom logging
-2. Support custom metrics
+1. ~~Extend custom logging~~ (done as of 0.2.X)
+2. ~~Support custom metrics~~ (done as of 0.2.X)
 3. Handle non-request related events (start of application / stop / crash)
 4. Tests with AppService
 5. API improvements
