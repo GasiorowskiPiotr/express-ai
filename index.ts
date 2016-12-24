@@ -44,10 +44,16 @@ class Logger implements ILogger {
     }
 }
 
-export = (app: express.Application, instrumentationKey: string) => {
-    appInsights.setup(instrumentationKey)
-        .setAutoCollectRequests(false)
-        .setAutoCollectExceptions(false).start();
+export = (app: express.Application, instrumentationKey: string, disableAutoCollect: boolean = true) => {
+    var aiSetup = appInsights.setup(instrumentationKey);
+
+    if(disableAutoCollect) {
+        aiSetup = aiSetup
+            .setAutoCollectRequests(false)
+            .setAutoCollectExceptions(false)
+    }
+        
+    aiSetup.start();
 
     const ai = appInsights.client;
     const logger = new Logger(ai);
