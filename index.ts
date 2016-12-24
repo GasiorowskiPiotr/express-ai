@@ -40,7 +40,7 @@ class Logger implements ILogger {
         this.ai.trackMetric(name, value);
     }
     trackRequest(req: express.Request, res: express.Response, properties?: {[key: string]: string}) {
-        this.ai.trackRequest(req, res)
+        this.ai.trackRequest(req, res, properties);
     }
 }
 

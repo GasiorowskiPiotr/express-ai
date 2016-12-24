@@ -15,7 +15,7 @@ Express-AI logs the request information as well as the errors that happened duri
 In order to use express-ai, you should do the following ( inside your `app.js` or wherever you apply middlewares ):
 
 ```
-var ai = require('express-ai')(app, 'YOUR_INSTRUMENTATION_KEY');
+var ai = require('express-ai')(app, 'YOUR_INSTRUMENTATION_KEY', false);
 ...
 app.use(ai.logRequest);
 ...
@@ -23,6 +23,7 @@ app.use(ai.logErrors);
 ```
 
 This setup logs every request and every unhandled exception that happens during the processing of request.
+The last parameter in the first line is disabline AI autocollection feature.
 In order to use custom logging inside of you route handler, you need to do the following:
 
 ```
@@ -79,5 +80,5 @@ trackRequest(req: express.Request, res: express.Response): void
 1. ~~Extend custom logging~~ (done as of 0.2.X)
 2. ~~Support custom metrics~~ (done as of 0.2.X)
 3. ~~Handle non-request related events (start of application / stop / crash)~~ (done as of 0.2.X)
-4. Tests with AppService
+4. ~~Tests with AppService~~ (it powers my blog - [blog.developin.cloud](http://blog.developin.cloud), some already found, as of 0.2.4 )
 5. (Further) API improvements
