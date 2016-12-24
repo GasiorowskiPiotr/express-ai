@@ -49,6 +49,8 @@ export = (app: express.Application, instrumentationKey: string, disableAutoColle
 
     if(disableAutoCollect) {
         aiSetup = aiSetup
+            .setAutoCollectPerformance(false)
+            .setAutoCollectConsole(false)
             .setAutoCollectRequests(false)
             .setAutoCollectExceptions(false)
     }
