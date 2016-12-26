@@ -44,7 +44,7 @@ class Logger implements ILogger {
     }
 }
 
-export = (app: express.Application, instrumentationKey: string, disableAutoCollect: boolean = true) => {
+export = (app: express.Application, instrumentationKey: string, disableAutoCollect: boolean = false) => {
     var aiSetup = appInsights.setup(instrumentationKey);
 
     if(disableAutoCollect) {

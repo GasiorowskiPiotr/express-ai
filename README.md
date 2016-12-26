@@ -15,7 +15,7 @@ Express-AI logs the request information as well as the errors that happened duri
 In order to use express-ai, you should do the following ( inside your `app.js` or wherever you apply middlewares ):
 
 ```
-var ai = require('express-ai')(app, 'YOUR_INSTRUMENTATION_KEY', false);
+var ai = require('express-ai')(app, 'YOUR_INSTRUMENTATION_KEY', true);
 ...
 app.use(ai.logRequest);
 ...
