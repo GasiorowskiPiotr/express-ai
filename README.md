@@ -10,6 +10,14 @@ The middleware for ExpressJS that enables developers to use Microsoft Azure Appl
 npm install express-ai@latest
 ```
 
+Supported versions of Node.js:
+1. Latest
+2. 7.X
+3. 6.X
+4. 5.X
+
+(if you need support for previous version, please create a bug).
+
 ## Usage
 
 Express-AI logs the request information as well as the errors that happened during the handling of a request.
