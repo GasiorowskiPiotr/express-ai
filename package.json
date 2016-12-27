@@ -35,8 +35,5 @@
   "dependencies": {
     "applicationinsights": "^0.17.1",
     "uuid": "^3.0.1"
-  },
-  "engines": {
-    "node": ">=7.0"
   }
 }
