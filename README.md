@@ -104,3 +104,5 @@ trackRequest(req: express.Request, res: express.Response): void
 4. ~~Tests with AppService~~ (it powers my blog - [blog.developin.cloud](http://blog.developin.cloud), some problems already found and fixed, as of 0.2.4 )
 5. ~~Unit Tests~~ (done as of 0.3.X)
 6. (Further) API improvements
+7. Performance tests (memory footprint)
+8. Prepare for 1.0 release :)
