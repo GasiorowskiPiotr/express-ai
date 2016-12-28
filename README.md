@@ -11,12 +11,14 @@ npm install express-ai@latest
 ```
 
 Supported versions of Node.js:
-1. Latest
-2. 7.X
-3. 6.X
-4. 5.X
 
-(if you need support for previous version, please create a bug).
+* Latest
+* 7.X
+* 6.X
+* 5.X
+* 4.X
+* 0.12.X
+* 0.10.X
 
 ## Usage
 
@@ -86,6 +88,12 @@ trackEvent(name: string, properties?: {[key: string]: string}): void;
 trackMetric(name: string, value: number): void;
 trackRequest(req: express.Request, res: express.Response): void
 ```
+
+## Version history
+* 0.1 - basic / development functionality
+* 0.2 - production ready, not yet fully tested
+* 0.3 - fully tested, supports only newest version of Node
+* 0.4 - support for all versions of Node >= 0.10
 
 ## Plans
 1. ~~Extend custom logging~~ (done as of 0.2.X)
