@@ -8,7 +8,7 @@ import * as sinonChai from 'sinon-chai';
 
 import * as httpMocks from 'node-mocks-http';
 
-import loggerFactory from '../index';
+import {loggers} from '../index';
 
 describe('Using Logger', () => {
 
@@ -125,7 +125,7 @@ describe('Creating a middleware', () => {
         sinon.spy(ai, 'setup');
         sinon.spy(ai, 'start');
 
-        loggerFactory(<Application>app, "dev", true);
+        loggers(<Application>app, "dev", true);
 
         done();
     });
@@ -173,8 +173,8 @@ describe('Using logRequest middleware', () => {
 
             sinon.spy(ai.client, 'trackRequest');
 
-            let loggers = loggerFactory(<Application>app, "dev", true);
-            aiLogMiddleware = loggers.logRequest;
+            let middlewares = loggers(<Application>app, "dev", true);
+            aiLogMiddleware = middlewares.logRequest;
         });
 
         it('should assign log to response.locals', (done) => {
@@ -243,9 +243,9 @@ describe('Using logError middleware', () => {
         sinon.spy(ai.client, 'trackRequest');
         sinon.spy(ai.client, 'trackException');
 
-        let loggers = loggerFactory(<Application>app, "dev", true);
-        aiLogMiddleware = loggers.logRequest;
-        aiErrorMiddleware = loggers.logErrors;
+        let middlewares = loggers(<Application>app, "dev", true);
+        aiLogMiddleware = loggers.middlewares;
+        aiErrorMiddleware = loggers.middlewares;
     });
 
     it('should call trackException with correct request information', (done) => {
