@@ -244,8 +244,8 @@ describe('Using logError middleware', () => {
         sinon.spy(ai.client, 'trackException');
 
         let middlewares = loggers(<Application>app, "dev", true);
-        aiLogMiddleware = loggers.middlewares;
-        aiErrorMiddleware = loggers.middlewares;
+        aiLogMiddleware = middlewares.logRequest;
+        aiErrorMiddleware = middlewares.logErrors;
     });
 
     it('should call trackException with correct request information', (done) => {
