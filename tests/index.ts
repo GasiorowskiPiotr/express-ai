@@ -1,10 +1,14 @@
 import * as ai from 'applicationinsights';
 import { Logger } from '../logger';
-import { Request, Response } from 'express';
+import { Request, Response, Application } from 'express';
 
 import * as sinon from 'sinon';
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
+
+import * as httpMocks from 'node-mocks-http';
+
+import loggerFactory from '../index';
 
 describe('Using Logger', () => {
 
@@ -38,6 +42,14 @@ describe('Using Logger', () => {
         sinon.spy(ai.client, 'trackEvent');
         sinon.spy(ai.client, 'trackMetric');
         sinon.spy(ai.client, 'trackRequest');
+    });
+
+    after(() => {
+        (<any>ai.client.trackTrace).restore();
+        (<any>ai.client.trackException).restore();
+        (<any>ai.client.trackEvent).restore();
+        (<any>ai.client.trackMetric).restore();
+        (<any>ai.client.trackRequest).restore();
     });
 
     it('should call traceInfo on AI with proper parameters', () => {
@@ -87,4 +99,175 @@ describe('Using Logger', () => {
 
         chai.assert((<any>ai.client.trackRequest).calledWithExactly(request, response, params));
     });
-})
+});
+
+describe('Creating a middleware', () => {
+
+    let request = {};
+    let response = {};
+    let app = {
+        locals: {
+
+        }
+    }
+    beforeEach((done) => {
+
+        request = httpMocks.createRequest({
+            method: 'GET',
+            url: '/',
+            query: {
+                test: 1
+            }
+        });
+
+        response = httpMocks.createResponse();
+
+        sinon.spy(ai, 'setup');
+        sinon.spy(ai, 'start');
+
+        loggerFactory(<Application>app, "dev", true);
+
+        done();
+    });
+
+    it('should start AI', () => {
+        chai.assert((<any>ai.setup).calledOnce);
+        chai.assert((<any>ai.start).calledOnce);
+    });
+
+    it('should assign log to app.locals', () => {
+        chai.assert.isDefined((<any>app.locals).log);
+    });
+
+    afterEach(() => {
+        (<any>ai.setup).restore();
+        (<any>ai.start).restore();
+    });
+});
+
+describe('Using logRequest middleware', () => {
+    
+        let request;
+        let response;
+        let app = {
+            locals: {
+
+            }
+        }
+
+        let aiLogMiddleware;
+
+        beforeEach(() => {
+            request = httpMocks.createRequest({
+                method: 'GET',
+                url: '/',
+                query: {
+                    test: 1
+                }
+            });
+
+            response = httpMocks.createResponse();
+            response = Object.assign({}, response, { locals: {} });
+
+            ai.setup("DEV").start();
+
+            sinon.spy(ai.client, 'trackRequest');
+
+            let loggers = loggerFactory(<Application>app, "dev", true);
+            aiLogMiddleware = loggers.logRequest;
+        });
+
+        it('should assign log to response.locals', (done) => {
+            aiLogMiddleware(request, response, (err) => {
+
+                chai.assert.isUndefined(err);
+                chai.assert.isDefined(response.locals.log);
+
+                done();
+            });
+        });
+
+        it('should assign requestId', (done) => {
+            aiLogMiddleware(request, response, (err) => {
+
+                chai.assert.isUndefined(err);
+                chai.assert.isDefined(response.locals.requestId);
+
+                done();
+            });
+        });
+
+        it('should call trackRequest', (done) => {
+            aiLogMiddleware(request, response, (err) => {
+
+                chai.assert.isUndefined(err);
+                chai.assert((<any>ai.client.trackRequest).calledWithExactly(request, response, {
+                    requestId: response.locals.requestId
+                }));
+
+                done();
+            });
+        });
+
+        afterEach(() => {
+            (<any>ai.client.trackRequest).restore();
+        });
+});
+
+describe('Using logError middleware', () => {
+    let request;
+    let response;
+    let app = {
+        locals: {
+
+        }
+    }
+
+    let aiLogMiddleware;
+    let aiErrorMiddleware;
+
+    beforeEach(() => {
+        request = httpMocks.createRequest({
+            method: 'GET',
+            url: '/',
+            query: {
+                test: 1
+            }
+        });
+
+        response = httpMocks.createResponse();
+        response = Object.assign({}, response, { locals: {} });
+
+        ai.setup("DEV").start();
+
+        sinon.spy(ai.client, 'trackRequest');
+        sinon.spy(ai.client, 'trackException');
+
+        let loggers = loggerFactory(<Application>app, "dev", true);
+        aiLogMiddleware = loggers.logRequest;
+        aiErrorMiddleware = loggers.logErrors;
+    });
+
+    it('should call trackException with correct request information', (done) => {
+        aiLogMiddleware(request, response, (error) => {
+            error = new Error("Test");
+
+            aiErrorMiddleware(error, request, response, (err) => {
+                chai.assert.isDefined(err);
+                chai.assert((<any>ai.client.trackException).calledWithExactly(error, {
+                    requestId: response.locals.requestId,
+                    message: '',
+                    url: request.url
+                }));
+
+                done();
+            });
+        });
+    });
+
+    afterEach(() => {
+        (<any>ai.client.trackRequest).restore();
+        (<any>ai.client.trackException).restore();
+    });
+
+});
