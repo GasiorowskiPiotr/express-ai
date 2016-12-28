@@ -91,5 +91,6 @@ trackRequest(req: express.Request, res: express.Response): void
 1. ~~Extend custom logging~~ (done as of 0.2.X)
 2. ~~Support custom metrics~~ (done as of 0.2.X)
 3. ~~Handle non-request related events (start of application / stop / crash)~~ (done as of 0.2.X)
-4. ~~Tests with AppService~~ (it powers my blog - [blog.developin.cloud](http://blog.developin.cloud), some already found, as of 0.2.4 )
-5. (Further) API improvements
+4. ~~Tests with AppService~~ (it powers my blog - [blog.developin.cloud](http://blog.developin.cloud), some problems already found and fixed, as of 0.2.4 )
+5. ~~Unit Tests~~ (done as of 0.3.X)
+6. (Further) API improvements
