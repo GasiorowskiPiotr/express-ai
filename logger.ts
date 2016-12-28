@@ -1,4 +1,5 @@
 import * as express from 'express';
+import * as shim from 'es6-shim';
 
 export interface ILogger {
     traceInfo(message: string, properties?: {[key: string]: string}): void;
