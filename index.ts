@@ -3,7 +3,7 @@ import * as express from 'express';
 import * as uuid from 'uuid';
 import { Logger } from './logger';
 
-export default (app: express.Application, instrumentationKey: string, disableAutoCollect: boolean = false) => {
+export const loggers = (app: express.Application, instrumentationKey: string, disableAutoCollect: boolean = false) => {
     var aiSetup = appInsights.setup(instrumentationKey);
 
     if(disableAutoCollect) {
