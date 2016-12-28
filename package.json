@@ -9,7 +9,9 @@
     "postversion": "git push && git push --tags",
     "test": "mocha dist/tests/index.js",
     "clean": "rimraf dist",
-    "dev": "npm run build && npm test && npm run clean"
+    "dev": "npm run build && npm test && npm run clean",
+    "cover": "istanbul cover _mocha dist/tests/index.js",
+    "coveralls": "npm run cover -- --report lcovonly && cat ./coverage/lcov.info | coveralls"
   },
   "author": "Piotr Gąsiorowski <gasiorowski.piotr@gmail.com>",
   "repository": {
@@ -28,8 +30,11 @@
     "@types/sinon-chai": "^2.7.27",
     "@types/uuid": "^2.0.29",
     "chai": "^3.5.0",
+    "coveralls": "^2.11.15",
     "express": "^4.14.0",
+    "istanbul": "^0.4.5",
     "mocha": "^3.2.0",
+    "mocha-lcov-reporter": "^1.2.0",
     "node-mocks-http": "^1.5.5",
     "rimraf": "^2.5.4",
     "sinon": "^1.17.6",
