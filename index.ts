@@ -2,7 +2,7 @@ import * as appInsights from 'applicationinsights';
 import * as express from 'express';
 import * as uuid from 'uuid';
 import { Logger } from './logger';
-import * as shim from 'es6-shim';
+require('es6-shim');
 
 export const loggers = (app: express.Application, instrumentationKey: string, disableAutoCollect: boolean = false) => {
     var aiSetup = appInsights.setup(instrumentationKey);

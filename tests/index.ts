@@ -10,7 +10,7 @@ import * as httpMocks from 'node-mocks-http';
 
 import {loggers} from '../index';
 
-import * as shim from 'es6-shim';
+require('es6-shim');
 
 describe('Using Logger', () => {
 
