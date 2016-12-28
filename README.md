@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/GasiorowskiPiotr/express-ai.svg?branch=master)](https://travis-ci.org/GasiorowskiPiotr/express-ai)
 [![npm version](https://badge.fury.io/js/express-ai.svg)](https://badge.fury.io/js/express-ai)
+[![Coverage Status](https://coveralls.io/repos/github/GasiorowskiPiotr/express-ai/badge.svg?branch=master)](https://coveralls.io/github/GasiorowskiPiotr/express-ai?branch=master)
 # express-ai
 
 The middleware for ExpressJS that enables developers to use Microsoft Azure Application Insights
