@@ -7,7 +7,9 @@
     "build": "tsc",
     "version": "git add -A",
     "postversion": "git push && git push --tags",
-    "test": "mocha dist/tests/index.js"
+    "test": "mocha dist/tests/index.js",
+    "clean": "rimraf dist",
+    "dev": "npm run build && npm test && npm run clean"
   },
   "author": "Piotr Gąsiorowski <gasiorowski.piotr@gmail.com>",
   "repository": {
@@ -30,6 +32,7 @@
     "express": "^4.14.0",
     "mocha": "^3.2.0",
     "node-mocks-http": "^1.5.5",
+    "rimraf": "^2.5.4",
     "sinon": "^1.17.6",
     "sinon-chai": "^2.8.0",
     "typescript": "^2.1.4"
