@@ -12,7 +12,7 @@ export const loggers = (app: express.Application, instrumentationKey: string, di
             .setAutoCollectPerformance(false)
             .setAutoCollectConsole(false)
             .setAutoCollectRequests(false)
-            .setAutoCollectExceptions(false)
+            .setAutoCollectExceptions(false);
     }
         
     aiSetup.start();
