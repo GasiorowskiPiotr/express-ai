@@ -118,7 +118,7 @@ describe('Creating a middleware', () => {
             method: 'GET',
             url: '/',
             query: {
-                test: 1
+                test: '1'
             }
         });
 
@@ -164,7 +164,7 @@ describe('Using logRequest middleware', () => {
                 method: 'GET',
                 url: '/',
                 query: {
-                    test: 1
+                    test: '1'
                 }
             });
 
@@ -233,7 +233,7 @@ describe('Using logError middleware', () => {
             method: 'GET',
             url: '/',
             query: {
-                test: 1
+                test: '1'
             }
         });
 

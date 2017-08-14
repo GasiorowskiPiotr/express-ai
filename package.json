@@ -4,7 +4,7 @@
   "description": "Microsoft Azure ApplicationInsights middleware of ExpressJS",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && xcopy /Y dist\\*.js .",
     "version": "git add -A",
     "postversion": "git push && git push --tags",
     "test": "mocha dist/tests/index.js",
@@ -30,10 +30,12 @@
     "@types/sinon": "^1.16.33",
     "@types/sinon-chai": "^2.7.27",
     "@types/uuid": "^2.0.29",
+    "applicationinsights": "~0.21",
     "artillery": "^1.5.0-20",
     "chai": "^3.5.0",
+    "copy": "^0.3.0",
     "coveralls": "^2.11.15",
-    "express": "^4.14.0",
+    "express": "~4.0",
     "istanbul": "^0.4.5",
     "mocha": "^3.2.0",
     "mocha-lcov-reporter": "^1.2.0",
@@ -45,8 +47,11 @@
     "typescript": "^2.1.4"
   },
   "dependencies": {
-    "applicationinsights": "^0.17.1",
     "uuid": "^3.0.1",
     "es6-shim": "^0.35.2"
+  },
+  "peerDependencies": {
+    "applicationinsights": "~0.21",
+    "express": "~4.0"
   }
 }
