@@ -52,5 +52,8 @@
   "peerDependencies": {
     "applicationinsights": "~0.21",
     "express": "~4.0"
+  },
+  "engines": {
+    "node": ">= 4.0"
   }
 }
