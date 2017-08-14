@@ -15,12 +15,11 @@ npm install express-ai@latest
 Supported versions of Node.js:
 
 * Latest
+* 8.X
 * 7.X
 * 6.X
 * 5.X
 * 4.X
-* 0.12.X
-* 0.10.X
 
 ## Usage
 
