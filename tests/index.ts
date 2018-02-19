@@ -58,7 +58,7 @@ describe('Using Logger', () => {
     it('should call traceError on AI with proper parameters', () => {
         logger.traceError(error, message, params);
 
-        chai.assert((<any>ai.defaultClient.trackException).calledWithExactly({ exception: error, properties: { ...params, message: message } }));
+        chai.assert((<any>ai.defaultClient.trackException).calledWithExactly({ exception: error, properties: Object.assign({}, params, { message: message }) }));
     });
 
     it('should call traceWarning on AI with proper parameters', () => {

@@ -1,12 +1,4 @@
 "use strict";
-var __assign = (this && this.__assign) || Object.assign || function(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-            t[p] = s[p];
-    }
-    return t;
-};
 exports.__esModule = true;
 var ai = require("applicationinsights");
 var logger_1 = require("../logger");
@@ -54,7 +46,7 @@ describe('Using Logger', function () {
     });
     it('should call traceError on AI with proper parameters', function () {
         logger.traceError(error, message, params);
-        chai.assert(ai.defaultClient.trackException.calledWithExactly({ exception: error, properties: __assign({}, params, { message: message }) }));
+        chai.assert(ai.defaultClient.trackException.calledWithExactly({ exception: error, properties: Object.assign({}, params, { message: message }) }));
     });
     it('should call traceWarning on AI with proper parameters', function () {
         logger.traceWarning(message, params);

@@ -1,12 +1,4 @@
 "use strict";
-var __assign = (this && this.__assign) || Object.assign || function(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-            t[p] = s[p];
-    }
-    return t;
-};
 exports.__esModule = true;
 require('es6-shim');
 var Logger = /** @class */ (function () {
@@ -17,7 +9,7 @@ var Logger = /** @class */ (function () {
         this.ai.trackTrace({ message: message, severity: 1, properties: properties });
     };
     Logger.prototype.traceError = function (error, message, properties) {
-        this.ai.trackException({ exception: error, properties: __assign({}, properties, { message: message }) });
+        this.ai.trackException({ exception: error, properties: Object.assign({}, properties, { message: message }) });
     };
     Logger.prototype.traceWarning = function (message, properties) {
         this.ai.trackTrace({ message: message, severity: 2, properties: properties });

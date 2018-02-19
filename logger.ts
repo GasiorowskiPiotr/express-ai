@@ -22,7 +22,7 @@ export class Logger implements ILogger {
         this.ai.trackTrace({ message, severity: 1, properties});
     }
     traceError(error: Error, message: string, properties?: {[key: string]: string}) {
-        this.ai.trackException({ exception: error, properties: { ...properties, message } });
+        this.ai.trackException({ exception: error, properties: Object.assign({}, properties, { message: message }) });
     }
     traceWarning(message: string, properties?: {[key: string]: string}) {
         this.ai.trackTrace({ message, severity: 2, properties });
