@@ -24,7 +24,7 @@ describe('Using Logger', () => {
 
     before(() => {
         ai.setup("DEV").start();
-        logger = new Logger(ai.client);
+        logger = new Logger(ai.defaultClient);
         message = "Test";
         params = {
             a: "1",
@@ -39,67 +39,67 @@ describe('Using Logger', () => {
             statusCode: 200
         };
 
-        sinon.spy(ai.client, 'trackTrace');
-        sinon.spy(ai.client, 'trackException');
-        sinon.spy(ai.client, 'trackEvent');
-        sinon.spy(ai.client, 'trackMetric');
-        sinon.spy(ai.client, 'trackRequest');
+        sinon.spy(ai.defaultClient, 'trackTrace');
+        sinon.spy(ai.defaultClient, 'trackException');
+        sinon.spy(ai.defaultClient, 'trackEvent');
+        sinon.spy(ai.defaultClient, 'trackMetric');
+        sinon.spy(ai.defaultClient, 'trackRequest');
     });
 
     after(() => {
-        (<any>ai.client.trackTrace).restore();
-        (<any>ai.client.trackException).restore();
-        (<any>ai.client.trackEvent).restore();
-        (<any>ai.client.trackMetric).restore();
-        (<any>ai.client.trackRequest).restore();
+        (<any>ai.defaultClient.trackTrace).restore();
+        (<any>ai.defaultClient.trackException).restore();
+        (<any>ai.defaultClient.trackEvent).restore();
+        (<any>ai.defaultClient.trackMetric).restore();
+        (<any>ai.defaultClient.trackRequest).restore();
     });
 
     it('should call traceInfo on AI with proper parameters', () => {
         logger.traceInfo(message, params);
 
-        chai.assert((<any>ai.client.trackTrace).calledWithExactly(message, 1, params));
+        chai.assert((<any>ai.defaultClient.trackTrace).calledWithExactly(message, 1, params));
     });
 
     it('should call traceError on AI with proper parameters', () => {
         logger.traceError(error, message, params);
 
-        chai.assert((<any>ai.client.trackException).calledWithExactly(error, Object.assign({}, { message: message }, params)));
+        chai.assert((<any>ai.defaultClient.trackException).calledWithExactly(error, Object.assign({}, { message: message }, params)));
     });
 
     it('should call traceWarning on AI with proper parameters', () => {
         logger.traceWarning(message, params);
 
-        chai.assert((<any>ai.client.trackTrace).calledWithExactly(message, 2, params));
+        chai.assert((<any>ai.defaultClient.trackTrace).calledWithExactly(message, 2, params));
     });
 
     it('should call traceVerbose on AI with proper parameters', () => {
         logger.traceVerbose(message, params);
 
-        chai.assert((<any>ai.client.trackTrace).calledWithExactly(message, 0, params));
+        chai.assert((<any>ai.defaultClient.trackTrace).calledWithExactly(message, 0, params));
     });
 
     it('should call traceCritical on AI with proper parameters', () => {
         logger.traceCritical(message, params);
 
-        chai.assert((<any>ai.client.trackTrace).calledWithExactly(message, 4, params));
+        chai.assert((<any>ai.defaultClient.trackTrace).calledWithExactly(message, 4, params));
     });
 
     it('should call trackEvent on AI with proper parameters', () => {
         logger.trackEvent(message, params);
 
-        chai.assert((<any>ai.client.trackEvent).calledWithExactly(message, params));
+        chai.assert((<any>ai.defaultClient.trackEvent).calledWithExactly(message, params));
     });
 
     it('should call trackMetric on AI with proper parameters', () => {
         logger.trackMetric(message, metric);
 
-        chai.assert((<any>ai.client.trackMetric).calledWithExactly(message, metric));
+        chai.assert((<any>ai.defaultClient.trackMetric).calledWithExactly(message, metric));
     });
 
     it('should call trackRequest on AI with proper parameters', () => {
         logger.trackRequest(<Request>request, <Response>response, params);
 
-        chai.assert((<any>ai.client.trackRequest).calledWithExactly(request, response, params));
+        chai.assert((<any>ai.defaultClient.trackRequest).calledWithExactly(request, response, params));
     });
 });
 
@@ -173,7 +173,7 @@ describe('Using logRequest middleware', () => {
 
             ai.setup("DEV").start();
 
-            sinon.spy(ai.client, 'trackRequest');
+            sinon.spy(ai.defaultClient, 'trackRequest');
 
             let middlewares = loggers(<Application>app, "dev", true);
             aiLogMiddleware = middlewares.logRequest;
@@ -203,7 +203,7 @@ describe('Using logRequest middleware', () => {
             aiLogMiddleware(request, response, (err) => {
 
                 chai.assert.isUndefined(err);
-                chai.assert((<any>ai.client.trackRequest).calledWithExactly(request, response, {
+                chai.assert((<any>ai.defaultClient.trackRequest).calledWithExactly(request, response, {
                     requestId: response.locals.requestId
                 }));
 
@@ -212,7 +212,7 @@ describe('Using logRequest middleware', () => {
         });
 
         afterEach(() => {
-            (<any>ai.client.trackRequest).restore();
+            (<any>ai.defaultClient.trackRequest).restore();
         });
 });
 
@@ -242,8 +242,8 @@ describe('Using logError middleware', () => {
 
         ai.setup("DEV").start();
 
-        sinon.spy(ai.client, 'trackRequest');
-        sinon.spy(ai.client, 'trackException');
+        sinon.spy(ai.defaultClient, 'trackRequest');
+        sinon.spy(ai.defaultClient, 'trackException');
 
         let middlewares = loggers(<Application>app, "dev", true);
         aiLogMiddleware = middlewares.logRequest;
@@ -256,7 +256,7 @@ describe('Using logError middleware', () => {
 
             aiErrorMiddleware(error, request, response, (err) => {
                 chai.assert.isDefined(err);
-                chai.assert((<any>ai.client.trackException).calledWithExactly(error, {
+                chai.assert((<any>ai.defaultClient.trackException).calledWithExactly(error, {
                     requestId: response.locals.requestId,
                     message: '',
                     url: request.url
@@ -268,8 +268,8 @@ describe('Using logError middleware', () => {
     });
 
     afterEach(() => {
-        (<any>ai.client.trackRequest).restore();
-        (<any>ai.client.trackException).restore();
+        (<any>ai.defaultClient.trackRequest).restore();
+        (<any>ai.defaultClient.trackException).restore();
     });
 
 });

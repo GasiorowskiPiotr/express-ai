@@ -1,4 +1,5 @@
 import * as express from 'express';
+import { TelemetryClient } from 'applicationinsights';
 require('es6-shim');
 
 export interface ILogger {
@@ -15,30 +16,38 @@ export interface ILogger {
 
 export class Logger implements ILogger {
 
-    constructor(private ai: Client) { }
+    constructor(private ai: TelemetryClient) { }
 
     traceInfo(message: string, properties?: {[key: string]: string}) {
-        this.ai.trackTrace(message, 1, properties);
+        this.ai.trackTrace({ message, severity: 1, properties});
     }
     traceError(error: Error, message: string, properties?: {[key: string]: string}) {
-        this.ai.trackException(error, Object.assign({}, { message: message }, properties));
+        this.ai.trackException({ exception: error, properties: { ...properties, message } });
     }
     traceWarning(message: string, properties?: {[key: string]: string}) {
-        this.ai.trackTrace(message, 2, properties);   
+        this.ai.trackTrace({ message, severity: 2, properties });
     }
     traceVerbose(message: string, properties?: {[key: string]: string}) {
-        this.ai.trackTrace(message, 0, properties);   
+        this.ai.trackTrace({ message, severity: 0, properties });
     }
     traceCritical(message: string, properties?: {[key: string]: string}) {
-        this.ai.trackTrace(message, 4, properties);   
+        this.ai.trackTrace({ message, severity: 4, properties });
     }
     trackEvent(name: string, properties?: {[key: string]: string}) {
-        this.ai.trackEvent(name, properties);
+        this.ai.trackEvent({ name, properties });
     }
     trackMetric(name: string, value: number) {
-        this.ai.trackMetric(name, value);
+        this.ai.trackMetric({ name, value});
     }
     trackRequest(req: express.Request, res: express.Response, properties?: {[key: string]: string}) {
-        this.ai.trackRequest(req, res, properties);
+        this.ai.trackRequest({ 
+            name: `${req.method} ${req.path}`,
+            url: req.url,
+            duration: parseInt(res.get('X-Response-Time'), 10),
+            source: req.ip,
+            resultCode: req.statusCode.toString(),
+            success: true,
+            properties
+        });
     }
 }

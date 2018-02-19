@@ -1,6 +1,6 @@
 /// <reference types="express" />
-/// <reference types="applicationinsights" />
 import * as express from 'express';
+import { TelemetryClient } from 'applicationinsights';
 export interface ILogger {
     traceInfo(message: string, properties?: {
         [key: string]: string;
@@ -25,7 +25,7 @@ export interface ILogger {
 }
 export declare class Logger implements ILogger {
     private ai;
-    constructor(ai: Client);
+    constructor(ai: TelemetryClient);
     traceInfo(message: string, properties?: {
         [key: string]: string;
     }): void;
