@@ -45,7 +45,7 @@ export class Logger implements ILogger {
             url: req.url,
             duration: parseInt(res.get('X-Response-Time'), 10),
             source: req.ip,
-            resultCode: req.statusCode.toString(),
+            resultCode: (res.statusCode || 200).toString(),
             success: true,
             properties
         });

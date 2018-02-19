@@ -1,10 +1,18 @@
 "use strict";
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
 exports.__esModule = true;
 var ai = require("applicationinsights");
 var logger_1 = require("../logger");
 var sinon = require("sinon");
 var chai = require("chai");
-var httpMocks = require("node-mocks-http");
+var sinon_express_mock_1 = require("sinon-express-mock");
 var index_1 = require("../index");
 require('es6-shim');
 describe('Using Logger', function () {
@@ -25,12 +33,8 @@ describe('Using Logger', function () {
         };
         error = new Error("Test");
         metric = 123;
-        request = {
-            url: '/'
-        };
-        response = {
-            statusCode: 200
-        };
+        request = sinon_express_mock_1.mockReq({ method: 'GET', path: '/', url: '/', ip: '127.0.0.1' });
+        response = sinon_express_mock_1.mockRes({ statusCode: 200 });
         sinon.spy(ai.defaultClient, 'trackTrace');
         sinon.spy(ai.defaultClient, 'trackException');
         sinon.spy(ai.defaultClient, 'trackEvent');
@@ -46,35 +50,43 @@ describe('Using Logger', function () {
     });
     it('should call traceInfo on AI with proper parameters', function () {
         logger.traceInfo(message, params);
-        chai.assert(ai.defaultClient.trackTrace.calledWithExactly(message, 1, params));
+        chai.assert(ai.defaultClient.trackTrace.calledWithExactly({ message: message, severity: 1, properties: params }));
     });
     it('should call traceError on AI with proper parameters', function () {
         logger.traceError(error, message, params);
-        chai.assert(ai.defaultClient.trackException.calledWithExactly(error, Object.assign({}, { message: message }, params)));
+        chai.assert(ai.defaultClient.trackException.calledWithExactly({ exception: error, properties: __assign({}, params, { message: message }) }));
     });
     it('should call traceWarning on AI with proper parameters', function () {
         logger.traceWarning(message, params);
-        chai.assert(ai.defaultClient.trackTrace.calledWithExactly(message, 2, params));
+        chai.assert(ai.defaultClient.trackTrace.calledWithExactly({ message: message, severity: 2, properties: params }));
     });
     it('should call traceVerbose on AI with proper parameters', function () {
         logger.traceVerbose(message, params);
-        chai.assert(ai.defaultClient.trackTrace.calledWithExactly(message, 0, params));
+        chai.assert(ai.defaultClient.trackTrace.calledWithExactly({ message: message, severity: 0, properties: params }));
     });
     it('should call traceCritical on AI with proper parameters', function () {
         logger.traceCritical(message, params);
-        chai.assert(ai.defaultClient.trackTrace.calledWithExactly(message, 4, params));
+        chai.assert(ai.defaultClient.trackTrace.calledWithExactly({ message: message, severity: 4, properties: params }));
     });
     it('should call trackEvent on AI with proper parameters', function () {
         logger.trackEvent(message, params);
-        chai.assert(ai.defaultClient.trackEvent.calledWithExactly(message, params));
+        chai.assert(ai.defaultClient.trackEvent.calledWithExactly({ name: message, properties: params }));
     });
     it('should call trackMetric on AI with proper parameters', function () {
         logger.trackMetric(message, metric);
-        chai.assert(ai.defaultClient.trackMetric.calledWithExactly(message, metric));
+        chai.assert(ai.defaultClient.trackMetric.calledWithExactly({ name: message, value: metric }));
     });
     it('should call trackRequest on AI with proper parameters', function () {
         logger.trackRequest(request, response, params);
-        chai.assert(ai.defaultClient.trackRequest.calledWithExactly(request, response, params));
+        chai.assert(ai.defaultClient.trackRequest.calledWithExactly({
+            name: 'GET /',
+            url: '/',
+            duration: NaN,
+            source: '127.0.0.1',
+            resultCode: "200",
+            success: true,
+            properties: params
+        }));
     });
 });
 describe('Creating a middleware', function () {
@@ -84,20 +96,15 @@ describe('Creating a middleware', function () {
         locals: {}
     };
     beforeEach(function (done) {
-        request = httpMocks.createRequest({
-            method: 'GET',
-            url: '/',
-            query: {
-                test: '1'
-            }
-        });
-        response = httpMocks.createResponse();
+        request = sinon_express_mock_1.mockReq({ method: 'GET', path: '/', url: '/', ip: '127.0.0.1' });
+        response = sinon_express_mock_1.mockRes({ statusCode: 200 });
         sinon.spy(ai, 'setup');
         sinon.spy(ai, 'start');
         index_1.loggers(app, "dev", true);
         done();
     });
     it('should start AI', function () {
+        console.log(ai.start.calledOnce);
         chai.assert(ai.setup.calledOnce);
         chai.assert(ai.start.calledOnce);
     });
@@ -117,15 +124,8 @@ describe('Using logRequest middleware', function () {
     };
     var aiLogMiddleware;
     beforeEach(function () {
-        request = httpMocks.createRequest({
-            method: 'GET',
-            url: '/',
-            query: {
-                test: '1'
-            }
-        });
-        response = httpMocks.createResponse();
-        response = Object.assign({}, response, { locals: {} });
+        request = sinon_express_mock_1.mockReq({ method: 'GET', path: '/', url: '/', ip: '127.0.0.1' });
+        response = sinon_express_mock_1.mockRes({ statusCode: 200 });
         ai.setup("DEV").start();
         sinon.spy(ai.defaultClient, 'trackRequest');
         var middlewares = index_1.loggers(app, "dev", true);
@@ -148,8 +148,16 @@ describe('Using logRequest middleware', function () {
     it('should call trackRequest', function (done) {
         aiLogMiddleware(request, response, function (err) {
             chai.assert.isUndefined(err);
-            chai.assert(ai.defaultClient.trackRequest.calledWithExactly(request, response, {
-                requestId: response.locals.requestId
+            chai.assert(ai.defaultClient.trackRequest.calledWithExactly({
+                name: 'GET /',
+                url: '/',
+                duration: NaN,
+                source: '127.0.0.1',
+                resultCode: "200",
+                success: true,
+                properties: {
+                    requestId: response.locals.requestId
+                }
             }));
             done();
         });
@@ -167,15 +175,8 @@ describe('Using logError middleware', function () {
     var aiLogMiddleware;
     var aiErrorMiddleware;
     beforeEach(function () {
-        request = httpMocks.createRequest({
-            method: 'GET',
-            url: '/',
-            query: {
-                test: '1'
-            }
-        });
-        response = httpMocks.createResponse();
-        response = Object.assign({}, response, { locals: {} });
+        request = sinon_express_mock_1.mockReq({ method: 'GET', path: '/', url: '/', ip: '127.0.0.1' });
+        response = sinon_express_mock_1.mockRes({ statusCode: 200 });
         ai.setup("DEV").start();
         sinon.spy(ai.defaultClient, 'trackRequest');
         sinon.spy(ai.defaultClient, 'trackException');
@@ -188,10 +189,13 @@ describe('Using logError middleware', function () {
             error = new Error("Test");
             aiErrorMiddleware(error, request, response, function (err) {
                 chai.assert.isDefined(err);
-                chai.assert(ai.defaultClient.trackException.calledWithExactly(error, {
-                    requestId: response.locals.requestId,
-                    message: '',
-                    url: request.url
+                chai.assert(ai.defaultClient.trackException.calledWithExactly({
+                    exception: error,
+                    properties: {
+                        requestId: response.locals.requestId,
+                        message: '',
+                        url: request.url
+                    }
                 }));
                 done();
             });

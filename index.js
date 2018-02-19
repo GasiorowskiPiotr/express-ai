@@ -14,7 +14,7 @@ exports.loggers = function (app, instrumentationKey, disableAutoCollect) {
             .setAutoCollectRequests(false)
             .setAutoCollectExceptions(false);
     }
-    aiSetup.start();
+    appInsights.start();
     var ai = appInsights.defaultClient;
     var logger = new logger_1.Logger(ai);
     app.locals.log = logger;
