@@ -17,7 +17,7 @@ export const loggers = (app: express.Application, instrumentationKey: string, di
         
     aiSetup.start();
 
-    const ai = appInsights.client;
+    const ai = appInsights.defaultClient;
     const logger = new Logger(ai);
 
     app.locals.log = logger;
