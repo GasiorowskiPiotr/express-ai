@@ -7,7 +7,7 @@ export interface ILogger {
     traceError(error: Error, message: string, properties?: {[key: string]: string}): void;
     traceWarning(message: string, properties?: {[key: string]: string}): void;
     traceVerbose(message: string, properties?: {[key: string]: string}): void;
-    traceCritical(message: string, properties?: {[key: string]: string});
+    traceCritical(message: string, properties?: {[key: string]: string}): void;
 
     trackEvent(name: string, properties?: {[key: string]: string}): void;
     trackMetric(name: string, value: number): void;
