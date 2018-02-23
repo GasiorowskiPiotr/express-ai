@@ -5,8 +5,7 @@ import { Request, Response, Application } from 'express';
 import * as sinon from 'sinon';
 import * as chai from 'chai';
 import * as sinonChai from 'sinon-chai';
-
-import * as httpMocks from 'node-mocks-http';
+import { mockReq, mockRes } from 'sinon-express-mock'
 
 import {loggers} from '../index';
 
@@ -24,7 +23,7 @@ describe('Using Logger', () => {
 
     before(() => {
         ai.setup("DEV").start();
-        logger = new Logger(ai.client);
+        logger = new Logger(ai.defaultClient);
         message = "Test";
         params = {
             a: "1",
@@ -32,74 +31,78 @@ describe('Using Logger', () => {
         };
         error = new Error("Test");
         metric = 123;
-        request = {
-            url: '/'
-        };
-        response = {
-            statusCode: 200
-        };
+        request = mockReq({ method: 'GET', path: '/', url: '/', ip: '127.0.0.1' });
+        response = mockRes({ statusCode: 200 });
 
-        sinon.spy(ai.client, 'trackTrace');
-        sinon.spy(ai.client, 'trackException');
-        sinon.spy(ai.client, 'trackEvent');
-        sinon.spy(ai.client, 'trackMetric');
-        sinon.spy(ai.client, 'trackRequest');
+        sinon.spy(ai.defaultClient, 'trackTrace');
+        sinon.spy(ai.defaultClient, 'trackException');
+        sinon.spy(ai.defaultClient, 'trackEvent');
+        sinon.spy(ai.defaultClient, 'trackMetric');
+        sinon.spy(ai.defaultClient, 'trackRequest');
     });
 
     after(() => {
-        (<any>ai.client.trackTrace).restore();
-        (<any>ai.client.trackException).restore();
-        (<any>ai.client.trackEvent).restore();
-        (<any>ai.client.trackMetric).restore();
-        (<any>ai.client.trackRequest).restore();
+        (<any>ai.defaultClient.trackTrace).restore();
+        (<any>ai.defaultClient.trackException).restore();
+        (<any>ai.defaultClient.trackEvent).restore();
+        (<any>ai.defaultClient.trackMetric).restore();
+        (<any>ai.defaultClient.trackRequest).restore();
     });
 
     it('should call traceInfo on AI with proper parameters', () => {
         logger.traceInfo(message, params);
 
-        chai.assert((<any>ai.client.trackTrace).calledWithExactly(message, 1, params));
+        chai.assert((<any>ai.defaultClient.trackTrace).calledWithExactly({ message, severity: 1, properties: params }));
     });
 
     it('should call traceError on AI with proper parameters', () => {
         logger.traceError(error, message, params);
 
-        chai.assert((<any>ai.client.trackException).calledWithExactly(error, Object.assign({}, { message: message }, params)));
+        chai.assert((<any>ai.defaultClient.trackException).calledWithExactly({ exception: error, properties: Object.assign({}, params, { message: message }) }));
     });
 
     it('should call traceWarning on AI with proper parameters', () => {
         logger.traceWarning(message, params);
 
-        chai.assert((<any>ai.client.trackTrace).calledWithExactly(message, 2, params));
+        chai.assert((<any>ai.defaultClient.trackTrace).calledWithExactly({ message, severity: 2, properties: params }));
     });
 
     it('should call traceVerbose on AI with proper parameters', () => {
         logger.traceVerbose(message, params);
 
-        chai.assert((<any>ai.client.trackTrace).calledWithExactly(message, 0, params));
+        chai.assert((<any>ai.defaultClient.trackTrace).calledWithExactly({ message, severity: 0, properties: params }));
     });
 
     it('should call traceCritical on AI with proper parameters', () => {
         logger.traceCritical(message, params);
 
-        chai.assert((<any>ai.client.trackTrace).calledWithExactly(message, 4, params));
+        chai.assert((<any>ai.defaultClient.trackTrace).calledWithExactly({ message, severity: 4, properties: params }));
     });
 
     it('should call trackEvent on AI with proper parameters', () => {
         logger.trackEvent(message, params);
 
-        chai.assert((<any>ai.client.trackEvent).calledWithExactly(message, params));
+        chai.assert((<any>ai.defaultClient.trackEvent).calledWithExactly({ name: message, properties: params }));
     });
 
     it('should call trackMetric on AI with proper parameters', () => {
         logger.trackMetric(message, metric);
 
-        chai.assert((<any>ai.client.trackMetric).calledWithExactly(message, metric));
+        chai.assert((<any>ai.defaultClient.trackMetric).calledWithExactly({ name: message, value: metric }));
     });
 
     it('should call trackRequest on AI with proper parameters', () => {
         logger.trackRequest(<Request>request, <Response>response, params);
 
-        chai.assert((<any>ai.client.trackRequest).calledWithExactly(request, response, params));
+        chai.assert((<any>ai.defaultClient.trackRequest).calledWithExactly({ 
+            name: 'GET /',
+            url: '/',
+            duration: NaN,
+            source: '127.0.0.1',
+            resultCode: "200",
+            success: true,
+            properties: params
+        }));
     });
 });
 
@@ -113,16 +116,8 @@ describe('Creating a middleware', () => {
         }
     }
     beforeEach((done) => {
-
-        request = httpMocks.createRequest({
-            method: 'GET',
-            url: '/',
-            query: {
-                test: '1'
-            }
-        });
-
-        response = httpMocks.createResponse();
+        request = mockReq({ method: 'GET', path: '/', url: '/', ip: '127.0.0.1' });
+        response = mockRes({ statusCode: 200 });
 
         sinon.spy(ai, 'setup');
         sinon.spy(ai, 'start');
@@ -133,6 +128,7 @@ describe('Creating a middleware', () => {
     });
 
     it('should start AI', () => {
+        console.log((<any>ai.start).calledOnce);
         chai.assert((<any>ai.setup).calledOnce);
         chai.assert((<any>ai.start).calledOnce);
     });
@@ -160,20 +156,12 @@ describe('Using logRequest middleware', () => {
         let aiLogMiddleware;
 
         beforeEach(() => {
-            request = httpMocks.createRequest({
-                method: 'GET',
-                url: '/',
-                query: {
-                    test: '1'
-                }
-            });
-
-            response = httpMocks.createResponse();
-            response = Object.assign({}, response, { locals: {} });
+            request = mockReq({ method: 'GET', path: '/', url: '/', ip: '127.0.0.1' });
+            response = mockRes({ statusCode: 200 });
 
             ai.setup("DEV").start();
 
-            sinon.spy(ai.client, 'trackRequest');
+            sinon.spy(ai.defaultClient, 'trackRequest');
 
             let middlewares = loggers(<Application>app, "dev", true);
             aiLogMiddleware = middlewares.logRequest;
@@ -203,8 +191,16 @@ describe('Using logRequest middleware', () => {
             aiLogMiddleware(request, response, (err) => {
 
                 chai.assert.isUndefined(err);
-                chai.assert((<any>ai.client.trackRequest).calledWithExactly(request, response, {
-                    requestId: response.locals.requestId
+                chai.assert((<any>ai.defaultClient.trackRequest).calledWithExactly({ 
+                    name: 'GET /',
+                    url: '/',
+                    duration: NaN,
+                    source: '127.0.0.1',
+                    resultCode: "200",
+                    success: true,
+                    properties: {
+                        requestId: response.locals.requestId
+                    }
                 }));
 
                 done();
@@ -212,7 +208,7 @@ describe('Using logRequest middleware', () => {
         });
 
         afterEach(() => {
-            (<any>ai.client.trackRequest).restore();
+            (<any>ai.defaultClient.trackRequest).restore();
         });
 });
 
@@ -229,21 +225,13 @@ describe('Using logError middleware', () => {
     let aiErrorMiddleware;
 
     beforeEach(() => {
-        request = httpMocks.createRequest({
-            method: 'GET',
-            url: '/',
-            query: {
-                test: '1'
-            }
-        });
-
-        response = httpMocks.createResponse();
-        response = Object.assign({}, response, { locals: {} });
+        request = mockReq({ method: 'GET', path: '/', url: '/', ip: '127.0.0.1' });
+        response = mockRes({ statusCode: 200 });
 
         ai.setup("DEV").start();
 
-        sinon.spy(ai.client, 'trackRequest');
-        sinon.spy(ai.client, 'trackException');
+        sinon.spy(ai.defaultClient, 'trackRequest');
+        sinon.spy(ai.defaultClient, 'trackException');
 
         let middlewares = loggers(<Application>app, "dev", true);
         aiLogMiddleware = middlewares.logRequest;
@@ -256,10 +244,13 @@ describe('Using logError middleware', () => {
 
             aiErrorMiddleware(error, request, response, (err) => {
                 chai.assert.isDefined(err);
-                chai.assert((<any>ai.client.trackException).calledWithExactly(error, {
-                    requestId: response.locals.requestId,
-                    message: '',
-                    url: request.url
+                chai.assert((<any>ai.defaultClient.trackException).calledWithExactly({
+                    exception: error,
+                    properties: {
+                        requestId: response.locals.requestId,
+                        message: '',
+                        url: request.url
+                    }
                 }));
 
                 done();
@@ -268,8 +259,8 @@ describe('Using logError middleware', () => {
     });
 
     afterEach(() => {
-        (<any>ai.client.trackRequest).restore();
-        (<any>ai.client.trackException).restore();
+        (<any>ai.defaultClient.trackRequest).restore();
+        (<any>ai.defaultClient.trackException).restore();
     });
 
 });
